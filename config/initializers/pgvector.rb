@@ -1,0 +1,1 @@
+PGVECTOR_DIM = 384
