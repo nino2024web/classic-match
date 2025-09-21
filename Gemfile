@@ -68,3 +68,7 @@ gem "rack-attack", "~> 6.7"
 gem "secure_headers", "~> 7.1"
 gem "sidekiq", "~> 8.0"
 gem "kaminari", "~> 1.2"
+
+gem "devise", "~> 4.9"
+
+gem "tailwindcss-rails", "~> 4.3"
