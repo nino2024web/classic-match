@@ -22,9 +22,12 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
-      <%= yield %>
-    </main>
-  </body>
+  <body class="min-h-screen">
+  <% if content_for?(:full_bleed) %>
+    <%= yield %>
+  <% else %>
+    <main class="container mx-auto px-5 py-10"><%= yield %></main>
+  <% end %>
+</body>
+
 </html>
