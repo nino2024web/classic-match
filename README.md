@@ -1,24 +1,69 @@
-# README
+# 要件定義：作品中心・匿名コミュニティ型「Rails マッチングアプリ」
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+- 版数: v1.0 / 日付: 2025-09-19
+- 想定技術: Ruby 3.3 / Rails 7.x / PostgreSQL 15+（pgvector）/ Redis / Action Cable / Hotwire
+- 対象: Web（PWA）→ 将来 iOS/Android
 
-Things you may want to cover:
+## 1) 概要
+- 目的: 人ではなく**音楽作品**を主語に、発見・短文メモ・匿名対話を促進。著作権リスクは外部リンク運用で回避。
+- コンセプト: 「今日はバッハとだけ付き合う」
+- KGI: 記述継続と回遊の維持、安全で健全な匿名コミュニティ
 
-* Ruby version
+## 2) MVPスコープ
+1. 作品メタデータ＋作品ページ（概要/聴きどころ/外部導線/匿名メモ）
+2. 作曲家ページ（前書き・目次・年表）
+3. 感情タグ＋近縁レコメンド（タグ/時代/簡易和声/メモ埋め込み）
+4. 作者ラウンジ（スレ＋スローモード、通報→仮非表示）
+5. 認証（魔法リンク・パスワードレス／任意 Passkey）
 
-* System dependencies
+## 3) 主要ユースケース
+- 気分3語→候補作品→外部配信リンクで再生
+- 自動書記モード（2–3分）→保存時に一文要約テンプレ提示
+- 共鳴スタンプで軽量フィードバック
+- 作曲家ラウンジ投稿（テンプレ/スローモード）／小部屋（承認制・2週間）
 
-* Configuration
+## 4) 機能要件（要点）
+- 管理: 作曲家/作品CRUD、導線テンプレ、NGワード辞書
+- 発見: 近縁曲提示、作曲家相関（簡易）
+- 記述: 自動書記、公開250字上限、要約テンプレ、スタンプ集計
+- コミュニティ: ラウンジ（スレ/スローモード/通報→仮非表示）、小部屋（4–6人/承認/期間制）、個チャはリクエスト制
+- 認証: 魔法リンク標準、Passkey任意、段階認証（投稿/個チャで強化）
 
-* Database creation
+## 5) 非機能要件（抜粋）
+- セキュリティ: OWASP ASVS L2、CSRF、RateLimit、強制ログアウト
+- プライバシー: データ最小化。**外部サービスの曲IDは保存しない**／個人再生リンクは**ローカルのみ**
+- 性能目標: 一覧<200ms(p95)、検索<500ms(p95)
+- アクセシビリティ: WCAG 2.2 AA
+- 通知: 低刺激（デイリー集約）
 
-* Database initialization
+## 6) データ（概要）
+- Postgres（pgvector）: composers / works / tags / notes / lounge_threads/posts / rooms / dm_* / reports / events ほか
+- ローカル保存: user_playback_links（ブラウザ LocalStorage/IndexedDB）
+- 保持: 通報等は90日。退会時は識別子匿名化
 
-* How to run the test suite
+## 7) レコメンド（初期）
+- タグ類似（TF-IDF/コサイン）＋時代距離＋簡易和声＋感情埋め込み（pgvector）
+- 合成: w1*タグ + w2*時代 + w3*和声 + w4*感情（ABで最適化）
 
-* Services (job queues, cache servers, search engines, etc.)
+## 8) 受け入れ基準（抜粋）
+- 外部配信は**リンクのみ**でDBに曲IDを保持しない
+- 自動書記タイマーが機能し、保存時に**一文要約テンプレ**を表示
+- 公開メモは**250字上限**（超過保存不可）
+- スローモード下で投稿間隔未満は拒否
+- 通報で投稿が**即時仮非表示**（モデ画面で復帰/維持）
+- 近縁曲≥3件提示＆根拠表示（タグ/時代 等）
+- 個チャ開通時のみ追加認証（Passkey/2FA）
+- ブロックは双方向不可視／既読OFF設定あり
+- 再生リンクは**端末ローカルのみ**
 
-* Deployment instructions
+## 9) リリース計画（例）
+- P0: スキーマ/認証/作品ページ/メモ/スタンプ
+- P1: ラウンジ（スレ/スローモード/通報）
+- P2: 近縁曲/気分検索/相関図（簡易）
+- P3: 小部屋（承認/期間制）
+- P4: A/B・ダッシュボード・a11y強化
 
-* ...
+## 10) 技術選定（要約）
+- Rails 7 + Hotwire/Turbo/Stimulus, Action Cable / Postgres 15+（pgvector）/ Redis / Sidekiq
+- 認証: パスワードレス（魔法リンク）＋任意 Passkey（WebAuthn）
+- 監視/品質: Sentry / GitHub Actions / RuboCop / Brakeman / Bundler-Audit
