@@ -1,0 +1,58 @@
+<% content_for :title, "プライバシーポリシー" %>
+<% content_for :body_bg, 'bg-zinc-800' %>
+
+<main class="mx-auto max-w-3xl px-5 py-10 text-zinc-100">
+  <h1 class="text-3xl font-bold">プライバシーポリシー</h1>
+  <p class="mt-3 text-sm text-zinc-300">最終更新日：<%= Date.today.strftime("%Y-%m-%d") %></p>
+
+  <section class="mt-8 space-y-6 leading-relaxed">
+    <h2 class="text-xl font-semibold">1. 基本方針</h2>
+    <p>最小限のデータ収集と安全な管理を重視し、匿名性を尊重します。</p>
+
+    <h2 class="text-xl font-semibold">2. 取得する情報</h2>
+    <ul class="list-disc pl-6 space-y-2">
+      <li><strong>必須</strong>：メールアドレス（パスワードレス認証用）、ペンネーム</li>
+      <li><strong>任意</strong>：好み・感情タグ、好きな作曲家・曲、投稿コンテンツ、設定情報</li>
+      <li><strong>技術情報</strong>：Cookie/同等技術、IP、UA、端末情報、アクセスログ</li>
+      <li><strong>取得しない原則</strong>：氏名・電話番号・位置情報等</li>
+    </ul>
+
+    <h2 class="text-xl font-semibold">3. 利用目的</h2>
+    <ul class="list-disc pl-6 space-y-2">
+      <li>認証、セキュリティ、不正対策</li>
+      <li>サービス提供、機能改善、レコメンド提供</li>
+      <li>問い合わせ対応、重要なお知らせ</li>
+      <li>統計・分析（個人を特定しない形）</li>
+    </ul>
+
+    <h2 class="text-xl font-semibold">4. 外部サービス・第三者提供</h2>
+    <p>音源は外部サービスを利用します。当該サービスのポリシーが適用されます。法令に基づく場合等を除き、本人同意なく第三者提供しません。</p>
+
+    <h2 class="text-xl font-semibold">5. 保存期間と削除</h2>
+    <p>アカウント削除時には合理的期間内に個人データを削除。通報・モデ関連は最大90日保持。公開投稿は匿名化の上で継続表示する場合があります（オプトアウト可）。</p>
+
+    <h2 class="text-xl font-semibold">6. 安全管理</h2>
+    <p>通信暗号化、アクセス制御、レート制限、脆弱性対策、ログ監査を実施。委託先には契約等で適切な管理を求めます。</p>
+
+    <h2 class="text-xl font-semibold">7. Cookie等</h2>
+    <p>認証、設定保存、分析のためにCookie等を使用します。無効化は可能ですが一部機能が利用できなくなることがあります。</p>
+
+    <h2 class="text-xl font-semibold">8. 未成年の利用</h2>
+    <p>18歳未満は利用できません。</p>
+
+    <h2 class="text-xl font-semibold">9. 開示・訂正・削除</h2>
+    <p>自身の個人データの開示・訂正・削除等の請求は〔連絡先〕へ。手続方法と本人確認方法をご案内します。</p>
+
+    <h2 class="text-xl font-semibold">10. 共同利用（導入時）</h2>
+    <p>共同運営者がいる場合、共同利用項目・範囲・管理者を明記の上、告知します。</p>
+
+    <h2 class="text-xl font-semibold">11. 改定</h2>
+    <p>重要な変更は告知し、改定日を明記します。</p>
+  </section>
+
+  <div class="mt-10">
+    <%= link_to (user_signed_in? ? "メインへ戻る" : "会員登録に戻る"),
+        signup_or_main_path,
+        class: "inline-flex items-center rounded-full bg-zinc-100 text-zinc-900 px-5 py-2 font-semibold hover:bg-white" %>
+  </div>
+</main>
