@@ -1,0 +1,8 @@
+<%= @user.email %> 様
+
+以下の確認コードを30分以内に入力してください。
+
+コード：<%= @user.confirmation_code %>
+
+または以下のリンクでも確認できます：
+<%= confirmation_url(@user, confirmation_token: @user.confirmation_token) %>
