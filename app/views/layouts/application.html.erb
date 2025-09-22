@@ -18,11 +18,28 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+<body class="min-h-screen <%= content_for?(:body_bg) ? content_for(:body_bg) : '' %>">
+     <%# ログイン後の仮 %>
+  <% if user_signed_in? %>
+    <div class="fixed top-4 right-4 z-50">
+      <%= button_to "ログアウト",
+            destroy_user_session_path,
+            method: :delete,
+            class: "rounded-full px-4 py-2 text-sm font-medium bg-slate-900 text-white/95 hover:bg-slate-800 shadow-lg focus:outline-none focus-visible:ring-4 focus-visible:ring-slate-300",
+            aria: { label: "ログアウト" } %>
+    </div>
+  <% end %>
+
+
+  <% if content_for?(:full_bleed) %>
     <%= yield %>
-  </body>
+  <% else %>
+    <main class="container mx-auto px-5 py-10"><%= yield %></main>
+  <% end %>
+</body>
+
 </html>
