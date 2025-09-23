@@ -1,0 +1,42 @@
+<% content_for :full_bleed, true %>
+
+<div class="relative min-h-dvh text-white">
+  <picture class="absolute inset-0">
+    <img
+      src="<%= asset_path('landing/landing-piano-lg.jpg') %>"
+      srcset="
+        <%= asset_path('landing/landing-piano-sm.jpg') %> 640w,
+        <%= asset_path('landing/landing-piano-md.jpg') %> 1024w,
+        <%= asset_path('landing/landing-piano-lg.jpg') %> 1920w"
+      sizes="100vw"
+      alt=""
+      class="w-full h-full object-cover object-center"
+      loading="eager" fetchpriority="high">
+  </picture>
+
+  <div class="absolute inset-0 bg-black/40"></div>
+  <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/25 to-black/70"></div>
+  <main class="relative z-10 min-h-dvh flex items-center justify-center p-6">
+    <div class="w-full max-w-3xl text-center">
+      <h1 class="font-bold leading-tight tracking-tight text-[40px] sm:text-5xl lg:text-6xl text-shadow">
+        好きな曲から、<br class="hidden sm:block">つながる。
+      </h1>
+      <p class="mt-4 sm:mt-6 mx-auto max-w-prose text-base sm:text-xl text-white/90 text-shadow">
+        クラシックの「曲」や「作曲家」をきっかけに、共通の話題から自然に会話がはじまります。
+      </p>
+
+      <div class="mt-10 mx-auto w-full max-w-md space-y-3">
+        <%= link_to "登録する", new_user_registration_path,
+          class: "block w-full text-center rounded-full py-4 font-semibold bg-amber-50/90 text-slate-900 shadow-lg backdrop-blur ring-1 ring-white/40 hover:bg-amber-100 focus:outline-none focus-visible:ring-4 focus-visible:ring-amber-200 transition" %>
+        <%= link_to "ログイン", new_user_session_path,
+          class: "block w-full text-center rounded-full py-4 font-semibold bg-white/10 text-white shadow-lg backdrop-blur ring-1 ring-white/30 hover:bg-white/20 focus:outline-none focus-visible:ring-4 focus-visible:ring-white/40 transition" %>
+
+        <div class="pt-2 flex flex-col items-center gap-2 text-sm text-white/80 sm:flex-row sm:justify-center">
+          <%= link_to "利用規約", terms_path,   class: "hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 rounded px-1" %>
+          <span class="hidden sm:inline">・</span>
+          <%= link_to "プライバシー", privacy_path, class: "hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60 rounded px-1" %>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

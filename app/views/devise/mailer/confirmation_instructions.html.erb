@@ -1,0 +1,10 @@
+<p><%= @email %> 宛にお送りしています。</p>
+
+<p>以下の6桁コードを確認画面に入力してください。</p>
+<h2 style="letter-spacing:.25em;margin:12px 0" class="tabular-nums"><%= @resource&.confirmation_code %></h2>
+
+<p>または次のリンクを開くと確認が完了します。</p>
+<p><%= link_to "メール確認を完了する",
+      confirmation_url(@resource, confirmation_token: @token) %></p>
+
+<p>このコードは30分で期限切れになります。</p>
