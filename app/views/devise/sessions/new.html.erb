@@ -30,9 +30,9 @@
             </div>
 
             <% if devise_mapping.rememberable? %>
-              <div class="flex items-center gap-2 pt-1">
-                <%= f.check_box :remember_me, class: "h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-300" %>
-                <%= f.label :remember_me, "ログイン状態を保持", class: "text-sm text-slate-700" %>
+              <div class="flex items-center gap-3 pt-1">
+                <%= f.check_box :remember_me, class: "peer mt-1 h-4 w-4 shrink-0 rounded border-slate-300 text-slate-900 focus:ring-slate-300" %>
+                <%= f.label :remember_me, "ログイン状態を保持", class: "cursor-pointer select-none text-sm text-slate-700" %>
               </div>
             <% end %>
 
@@ -42,14 +42,23 @@
             </div>
           </div>
         <% end %>
+        <div class="mt-6 mb-2 text-sm">
+          <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            <% if devise_mapping.recoverable? %>
+            <%= link_to "パスワードをお忘れの方",
+                new_password_path(resource_name),
+                class: "text-slate-600 hover:underline whitespace-nowrap" %>
+            <% end %>
 
-        <div class="mt-6 flex items-center justify-between text-sm">
-          <% if devise_mapping.recoverable? %>
-            <%= link_to "パスワードをお忘れの方", new_password_path(resource_name), class: "text-slate-600 hover:underline" %>
-          <% end %>
-          <% if devise_mapping.registerable? %>
-            <%= link_to "会員登録", new_registration_path(resource_name), class: "text-slate-600 hover:underline" %>
-          <% end %>
+            <%= link_to "ホームへ戻る",
+                root_path,
+                class: "text-slate-600 hover:underline whitespace-nowrap" %>
+            <% if devise_mapping.registerable? %>
+              <%= link_to "会員登録はこちら",
+                  new_registration_path(resource_name),
+                  class: "text-slate-600 hover:underline whitespace-nowrap" %>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>

@@ -2,8 +2,9 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
   :recoverable, :rememberable, :validatable, :confirmable
 
-  attr_accessor :terms_accepted
+  attr_accessor :terms_accepted, :age_confirmed
   validates :terms_accepted, acceptance: { accept: "1" }, on: :create
+  validates :age_confirmed,  acceptance: { accept: "1" }, on: :create
 
   # 6桁ワンタイムコード生成
   def issue_confirmation_code!

@@ -10,15 +10,17 @@ class Users::ConfirmationsController < ApplicationController
     code  = params[:code].to_s.strip
 
     unless @user
-      redirect_to new_user_registration_path, alert: "最初からやり直してください。" and return
+      redirect_to new_user_registration_path, alert: and return
     end
 
     if @user.confirmation_code_valid?(code)
-      @user.confirm # Devise confirm!
+      @user.confirm
       sign_in(@user)
-      redirect_to (defined?(authenticated_root_path) ? authenticated_root_path : root_path), notice: "メール確認が完了しました。"
+      redirect_to (defined?(authenticated_root_path) ? authenticated_root_path : root_path)
     else
-      flash.now[:alert] = "コードが不正か、有効期限切れです。"
+      if code.present? && ActiveSupport::SecurityUtils.secure_compare(code.to_s, (@user.confirmation_code || "").to_s)
+        @expired = true
+      end
       render :new, status: :unprocessable_entity
     end
   end
@@ -28,9 +30,9 @@ class Users::ConfirmationsController < ApplicationController
     if @user
       @user.issue_confirmation_code!
       UserMailer.confirmation_code(@user).deliver_later
-      redirect_to verify_email_path, notice: "確認コードを再送しました。"
+      redirect_to verify_email_path
     else
-      redirect_to new_user_registration_path, alert: "最初からやり直してください。"
+      redirect_to new_user_registration_path
     end
   end
 
