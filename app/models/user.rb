@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
   :recoverable, :rememberable, :validatable, :confirmable
+  validate :password_complexity, if: -> { password.present? }
 
   attr_accessor :terms_accepted, :age_confirmed
   validates :terms_accepted, acceptance: { accept: "1" }, on: :create
@@ -21,9 +22,14 @@ class User < ApplicationRecord
   end
 
   after_create_commit do
-    # 開発用 1分
-    ::CleanupUnconfirmedUsersJob.set(wait: 1.minute).perform_later(id)
-    # こっちは本番用
-    # ::CleanupUnconfirmedUsersJob.set(wait: 48.hours).perform_later(id)
+    # 48時間
+    ::CleanupUnconfirmedUsersJob.set(wait: 48.hours).perform_later(id)
+  end
+
+  private
+  def password_complexity
+    unless password =~ /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/
+      errors.add(:password, :complexity)
+    end
   end
 end
