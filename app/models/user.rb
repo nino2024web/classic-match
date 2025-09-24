@@ -1,0 +1,51 @@
+class User < ApplicationRecord
+  devise :database_authenticatable, :registerable,
+  :recoverable, :rememberable, :validatable, :confirmable
+
+  validate :password_complexity, if: -> { password.present? }
+
+  attr_accessor :terms_accepted, :age_confirmed
+  validates :terms_accepted, acceptance: { accept: "1" }, on: :create
+  validates :age_confirmed,  acceptance: { accept: "1" }, on: :create
+
+  # 6桁ワンタイムコード生成
+  def issue_confirmation_code!
+    self.confirmation_code = "%06d" % SecureRandom.random_number(1_000_000)
+    self.confirmation_code_sent_at = Time.current
+    self.confirmation_sent_at = Time.current
+    save!(validate: false)
+  end
+
+  def confirmation_code_valid?(code)
+    code.present? &&
+      ActiveSupport::SecurityUtils.secure_compare(code.to_s, confirmation_code.to_s) &&
+      confirmation_code_sent_at && confirmation_code_sent_at >= 30.minutes.ago
+  end
+
+  # 未確認ユーザーを遅延削除-48時間-
+  after_create_commit do
+    ::CleanupUnconfirmedUsersJob.set(wait: 48.hours).perform_later(id)
+  end
+
+  # 6桁コードの発行（パスワード再設定用）
+  def issue_reset_password_code!
+    update_columns(
+      reset_password_code:      "%06d" % SecureRandom.random_number(1_000_000),
+      reset_password_code_sent_at: Time.current
+    )
+  end
+
+  def reset_password_code_valid?(code)
+    return false if reset_password_code.blank? || code.to_s.blank?
+    ActiveSupport::SecurityUtils.secure_compare(code.to_s, reset_password_code.to_s) &&
+      reset_password_code_sent_at && reset_password_code_sent_at >= 30.minutes.ago
+  end
+
+  private
+  
+  def password_complexity
+    unless password =~ /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/
+      errors.add(:password, :complexity)
+    end
+  end
+end
