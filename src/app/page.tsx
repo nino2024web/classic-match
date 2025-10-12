@@ -17,10 +17,10 @@ export default function Home() {
           </p>
           <div className="space-y-6">
             <h1 className="text-3xl font-semibold leading-tight text-white sm:text-4xl sm:leading-snug">
-              クラシック作品に集中できる、匿名コミュニティ。
+              クラシック作品に集中できる、静かなコミュニティ。
             </h1>
             <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-300 sm:mx-0 sm:text-base">
-              気分に合う作品を提案し、匿名メモと共鳴スタンプで静かにシェアする場所です。会員登録なしでも一部の作品情報を閲覧できます。
+              気分に合う作品を提案し、短いメモと共鳴スタンプで静かにシェアする場所です。会員登録なしでも一部の作品情報を閲覧できます。
             </p>
           </div>
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:items-start sm:justify-start">
