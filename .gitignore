@@ -22,6 +22,9 @@
 # misc
 .DS_Store
 *.pem
+docs/AGENTS.md
+docs/pre-signup-landing-plan.md
+docs/signup-backend.md
 
 # debug
 npm-debug.log*
