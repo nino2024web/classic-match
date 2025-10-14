@@ -2,15 +2,9 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
-const ERA_OPTIONS = [
-  "バロック",
-  "古典派",
-  "ロマン派",
-  "近代",
-  "現代",
-];
+const ERA_OPTIONS = ["バロック", "古典派", "ロマン派", "近代", "現代"];
 
 const MOOD_OPTIONS = [
   "透明",
@@ -55,6 +49,77 @@ export default function ProfileSetupPage() {
       !loading
     );
   }, [callSign, email, selectedEras, selectedMoods, agreed, loading]);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadProfile = async () => {
+      try {
+        const response = await fetch("/api/profile", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data = (await response.json().catch(() => null)) as
+          | {
+              status?: string;
+              profile?: {
+                email?: string;
+                callSign?: string;
+                eras?: string[];
+                moods?: string[];
+                intro?: string;
+                agreed?: boolean;
+              };
+            }
+          | null;
+
+        if (
+          !active ||
+          !data ||
+          data.status !== "ok" ||
+          !data.profile
+        ) {
+          return;
+        }
+
+        const profile = data.profile;
+
+        setCallSign(profile.callSign ?? "");
+        setEmail(profile.email ?? "");
+        setSelectedEras(
+          Array.isArray(profile.eras)
+            ? profile.eras.filter(
+                (item): item is string => typeof item === "string"
+              )
+            : []
+        );
+        setSelectedMoods(
+          Array.isArray(profile.moods)
+            ? profile.moods
+                .filter((item): item is string => typeof item === "string")
+                .slice(0, MAX_MOOD_SELECTION)
+            : []
+        );
+        setIntro(profile.intro ?? "");
+        setAgreed(Boolean(profile.agreed));
+      } catch (error) {
+        console.error("Failed to preload profile", error);
+      }
+    };
+
+    loadProfile();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const toggleEra = (era: string) => {
     setSelectedEras((prev) =>
@@ -116,7 +181,7 @@ export default function ProfileSetupPage() {
           "プロフィールを保存しました。静かな時間の準備が整いました。"
         );
         window.setTimeout(() => {
-          router.push("/");
+          router.push("/member");
         }, 1600);
       }
     } catch (error) {
@@ -145,7 +210,7 @@ export default function ProfileSetupPage() {
               落ち着きのある譜面に仕上げます。
             </h1>
             <p className="text-sm text-slate-300 sm:text-base">
-              呼び名と静かな約束、最初の感情タグを整えたら、保存とともにホームの静寂へそっと送り出します。
+              呼び名と静かな約束、最初の感情タグを整えたら、ホームの静寂へそっと送り出します。
             </p>
           </div>
 
@@ -221,7 +286,7 @@ export default function ProfileSetupPage() {
                   初期感情タグ（1〜{MAX_MOOD_SELECTION} 個）
                 </p>
                 <p className="mt-1 text-xs text-slate-400">
-                  最初の気分を 1〜3 語選んでください。
+                  音の鳴くままに今の感情を 1〜3 語選んでください。
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {MOOD_OPTIONS.map((mood) => {
@@ -237,8 +302,8 @@ export default function ProfileSetupPage() {
                           active
                             ? "border-sky-300/70 bg-sky-300/20 text-sky-100"
                             : disabled
-                              ? "border-white/10 bg-white/5 text-slate-500 cursor-not-allowed"
-                              : "border-white/15 bg-white/5 text-slate-200 hover:border-white/30 hover:bg-white/10"
+                            ? "border-white/10 bg-white/5 text-slate-500 cursor-not-allowed"
+                            : "border-white/15 bg-white/5 text-slate-200 hover:border-white/30 hover:bg-white/10"
                         }`}
                         aria-pressed={active}
                         disabled={disabled}
@@ -263,9 +328,6 @@ export default function ProfileSetupPage() {
                   className="mt-2 w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-base text-white outline-none transition focus:border-emerald-300/70 focus:bg-slate-900/70 focus:ring-2 focus:ring-emerald-300/30"
                 />
               </label>
-              <p className="text-xs text-slate-500">
-                入力内容はコミュニティ内部のみで共有し、README のプライバシーポリシーに従います。
-              </p>
             </div>
 
             <div className="space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-200">
@@ -273,7 +335,7 @@ export default function ProfileSetupPage() {
               <ul className="space-y-1 text-xs text-slate-300">
                 <li>・ 音に敬意を払い、作品を主語に語ります。</li>
                 <li>・ 人には寛容に。個人攻撃や断定を避けましょう。</li>
-                <li>・ 猫様に忠誠を。穏やかな場づくりに協力してください。</li>
+                <li>・ 穏やかな場づくりに協力してください。</li>
               </ul>
               <label className="mt-3 flex items-center gap-2 text-xs text-slate-300">
                 <input
@@ -289,7 +351,7 @@ export default function ProfileSetupPage() {
 
             <button
               type="submit"
-              className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-emerald-400 via-teal-400 to-sky-500 px-6 py-3 text-sm font-semibold text-slate-950 transition-transform transition-shadow duration-150 ease-out hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-18px_rgba(14,165,233,0.45)] hover:brightness-105 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+              className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-emerald-400 via-teal-400 to-sky-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:opacity-90 disabled:opacity-60"
               disabled={!canSubmit}
             >
               {loading ? "保存中..." : "プロフィールを保存する"}

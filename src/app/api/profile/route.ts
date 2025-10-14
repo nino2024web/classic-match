@@ -1,7 +1,12 @@
 export const runtime = "nodejs";
 
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
+import {
+  SESSION_COOKIE_NAME,
+  validateSessionCookie,
+} from "@/lib/session";
 
 type Payload = {
   email?: string;
@@ -14,6 +19,87 @@ type Payload = {
 
 const EMAIL_REGEX =
   /^[\w!#$%&'*+\-/=?^`{|}~.]+@[\w-]+(\.[\w-]+)*\.[A-Za-z]{2,}$/;
+
+type ProfileRecord = {
+  email: string | null;
+  call_sign: string | null;
+  top_eras: string[] | null;
+  top_moods: string[] | null;
+  intro: string | null;
+  agreed_rules: boolean | null;
+};
+
+export async function GET() {
+  const cookieStore = cookies();
+  const rawSession = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+  const validation = validateSessionCookie(rawSession);
+
+  if (validation.status !== "valid") {
+    return NextResponse.json(
+      { message: "ログインセッションが無効です。" },
+      { status: 401 }
+    );
+  }
+
+  const signupId = validation.session.signupId;
+
+  let profile: ProfileRecord | undefined;
+
+  try {
+    const result = await query<ProfileRecord>(
+      `
+        SELECT
+          COALESCE(bp.email, bs.email) AS email,
+          COALESCE(bp.call_sign, bs.call_sign) AS call_sign,
+          bp.top_eras,
+          bp.top_moods,
+          bp.intro,
+          bp.agreed_rules
+        FROM beta_signups bs
+        LEFT JOIN beta_profiles bp ON bp.signup_id = bs.id
+        WHERE bs.id = $1
+        LIMIT 1
+      `,
+      [signupId]
+    );
+
+    profile = result.rows[0];
+  } catch (error) {
+    console.error("Failed to load profile data", error);
+    return NextResponse.json(
+      { message: "プロフィールの取得に失敗しました。" },
+      { status: 500 }
+    );
+  }
+
+  if (!profile) {
+    return NextResponse.json({ status: "not_found" }, { status: 404 });
+  }
+
+  const eras =
+    Array.isArray(profile.top_eras) && profile.top_eras.length > 0
+      ? profile.top_eras.filter((item): item is string => typeof item === "string")
+      : [];
+  const moods =
+    Array.isArray(profile.top_moods) && profile.top_moods.length > 0
+      ? profile.top_moods.filter((item): item is string => typeof item === "string")
+      : [];
+
+  return NextResponse.json(
+    {
+      status: "ok",
+      profile: {
+        email: profile.email ?? "",
+        callSign: profile.call_sign ?? "",
+        eras,
+        moods,
+        intro: profile.intro ?? "",
+        agreed: Boolean(profile.agreed_rules),
+      },
+    },
+    { status: 200 }
+  );
+}
 
 export async function POST(request: Request) {
   let payload: Payload;
