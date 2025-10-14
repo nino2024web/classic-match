@@ -44,11 +44,13 @@ export default function ProfileSetupPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const canSubmit = useMemo(() => {
+    const moodCount = selectedMoods.length;
     return (
       callSign.trim().length > 0 &&
       email.trim().length > 0 &&
       selectedEras.length > 0 &&
-      selectedMoods.length === MAX_MOOD_SELECTION &&
+      moodCount > 0 &&
+      moodCount <= MAX_MOOD_SELECTION &&
       agreed &&
       !loading
     );
@@ -140,11 +142,10 @@ export default function ProfileSetupPage() {
         <section className="space-y-8 rounded-[32px] border border-white/10 bg-slate-950/75 p-8 shadow-[0_70px_140px_-70px_rgba(9,9,11,0.9)] backdrop-blur-xl sm:p-12">
           <div className="space-y-3 text-center md:text-left">
             <h1 className="text-2xl font-semibold text-white sm:text-3xl">
-              最初の響きを整えましょう。
+              落ち着きのある譜面に仕上げます。
             </h1>
             <p className="text-sm text-slate-300 sm:text-base">
-              README のオンボーディング設計に沿い、呼び名・同意・初期感情タグをここで整えます。
-              保存後はホームへ移動します。
+              呼び名と静かな約束、最初の感情タグを整えたら、保存とともにホームの静寂へそっと送り出します。
             </p>
           </div>
 
@@ -217,10 +218,10 @@ export default function ProfileSetupPage() {
 
               <div>
                 <p className="text-sm font-medium text-slate-200">
-                  初期感情タグ（{MAX_MOOD_SELECTION} 個まで）
+                  初期感情タグ（1〜{MAX_MOOD_SELECTION} 個）
                 </p>
                 <p className="mt-1 text-xs text-slate-400">
-                  README の方針に沿って最初の気分を 3 語選びます。
+                  最初の気分を 1〜3 語選んでください。
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   {MOOD_OPTIONS.map((mood) => {
@@ -288,7 +289,7 @@ export default function ProfileSetupPage() {
 
             <button
               type="submit"
-              className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-emerald-400 via-teal-400 to-sky-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:opacity-90 disabled:opacity-60"
+              className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-emerald-400 via-teal-400 to-sky-500 px-6 py-3 text-sm font-semibold text-slate-950 transition-transform transition-shadow duration-150 ease-out hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-18px_rgba(14,165,233,0.45)] hover:brightness-105 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-none"
               disabled={!canSubmit}
             >
               {loading ? "保存中..." : "プロフィールを保存する"}

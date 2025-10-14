@@ -61,9 +61,9 @@ export async function POST(request: Request) {
     );
   }
 
-  if (moods.length !== 3) {
+  if (moods.length < 1 || moods.length > 3) {
     return NextResponse.json(
-      { message: "感情タグを3つ選択してください。" },
+      { message: "感情タグは1〜3個選択してください。" },
       { status: 400 }
     );
   }

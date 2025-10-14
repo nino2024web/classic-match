@@ -78,9 +78,9 @@ export default function SignupPage() {
       });
 
       if (!response.ok) {
-        const data = (await response.json().catch(() => null)) as
-          | { message?: string }
-          | null;
+        const data = (await response.json().catch(() => null)) as {
+          message?: string;
+        } | null;
         const message =
           data?.message ??
           "登録の事前確認に失敗しました。時間をおいて再度お試しください。";
@@ -167,9 +167,9 @@ export default function SignupPage() {
       });
 
       if (!response.ok) {
-        const data = (await response.json().catch(() => null)) as
-          | { message?: string }
-          | null;
+        const data = (await response.json().catch(() => null)) as {
+          message?: string;
+        } | null;
         const message =
           data?.message ??
           "登録処理に失敗しました。時間をおいて再度お試しください。";
@@ -192,7 +192,9 @@ export default function SignupPage() {
     const trimmedEmail = email.trim();
     setLoading(false);
     setRedirecting(true);
-    const destination = `/profile/setup?callSign=${encodeURIComponent(trimmedCallSign)}&email=${encodeURIComponent(trimmedEmail)}`;
+    const destination = `/profile/setup?callSign=${encodeURIComponent(
+      trimmedCallSign
+    )}&email=${encodeURIComponent(trimmedEmail)}`;
     setPendingDestination(destination);
     router.push(destination);
   };
@@ -249,7 +251,9 @@ export default function SignupPage() {
                 <ul className="mt-3 space-y-2 text-slate-300">
                   <li>・ 気分タグを選ぶと、作品の提案が静かに届きます。</li>
                   <li>・ 250字のメモで感じた音の色彩を残せます。</li>
-                  <li>・ 共鳴スタンプと通報仮非表示で穏やかな環境を保ちます。</li>
+                  <li>
+                    ・ 共鳴スタンプと通報仮非表示で穏やかな環境を保ちます。
+                  </li>
                 </ul>
               </div>
 
@@ -332,7 +336,11 @@ export default function SignupPage() {
                   </button>
                 </form>
               ) : (
-                <form className="space-y-8" onSubmit={handleCodeSubmit} noValidate>
+                <form
+                  className="space-y-8"
+                  onSubmit={handleCodeSubmit}
+                  noValidate
+                >
                   <div className="space-y-3 text-center md:text-left">
                     {generatedCode && (
                       <p className="font-mono text-sm text-emerald-300 sm:text-base">
@@ -419,9 +427,22 @@ export default function SignupPage() {
                     </Link>
                   </p>
                 )}
-                <p className="text-xs text-slate-500">
-                  登録を進めることで利用規約とプライバシーポリシーに同意したものと
-                  みなされます。
+                <p className="text-xs text-slate-400 text-center md:text-left">
+                  登録を進めることで{" "}
+                  <Link
+                    href="/terms"
+                    className="text-emerald-300 transition hover:text-emerald-200"
+                  >
+                    利用規約
+                  </Link>
+                  と{" "}
+                  <Link
+                    href="/privacy"
+                    className="text-emerald-300 transition hover:text-emerald-200"
+                  >
+                    プライバシーポリシー
+                  </Link>
+                  に同意したものとみなします。
                 </p>
               </div>
             </>
