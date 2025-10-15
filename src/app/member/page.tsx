@@ -3,15 +3,10 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { query } from "@/lib/db";
-import {
-  PRIVACY_SECTIONS,
-  TERMS_CONTACT,
-  TERMS_SECTIONS,
-} from "@/lib/legal";
-import {
-  SESSION_COOKIE_NAME,
-  validateSessionCookie,
-} from "@/lib/session";
+import PublicChat from "@/components/chat/PublicChat";
+import MemberChat from "@/components/member/MemberChat";
+import { PRIVACY_SECTIONS, TERMS_CONTACT, TERMS_SECTIONS } from "@/lib/legal";
+import { SESSION_COOKIE_NAME, validateSessionCookie } from "@/lib/session";
 
 type SignupRow = {
   call_sign: string;
@@ -134,34 +129,6 @@ export default async function MemberPage() {
           </div>
         </header>
 
-        <section className="grid gap-6 sm:grid-cols-2">
-          <div className="rounded-[28px] border border-emerald-400/25 bg-emerald-400/10 p-6 text-slate-50 shadow-[0_35px_70px_-45px_rgba(16,185,129,0.65)]">
-            <p className="text-xs uppercase tracking-[0.35em] text-emerald-200">
-              Current Status
-            </p>
-            <h2 className="mt-3 text-xl font-semibold text-white">
-              ベータ体験へのご参加ありがとうございます。
-            </h2>
-            <p className="mt-3 text-sm text-emerald-100/80">
-              現在、記録・共有・レコメンドの各機能を順次クローズドテスト中です。最新のリリースが完了次第、
-              メールにて優先案内をお届けします。
-            </p>
-          </div>
-          <div className="rounded-[28px] border border-white/10 bg-white/5 p-6 text-slate-200">
-            <p className="text-xs uppercase tracking-[0.35em] text-slate-400">
-              Quick Memo
-            </p>
-            <h2 className="mt-3 text-xl font-semibold text-white">
-              開発ロードマップ
-            </h2>
-            <ul className="mt-4 space-y-3 text-sm leading-relaxed">
-              <li>・ 作品ページの公開と匿名メモ投稿（Phase 0）</li>
-              <li>・ 作曲家ラウンジとスローモード運用（Phase 1）</li>
-              <li>・ 気分検索と近縁曲レコメンド（Phase 2）</li>
-            </ul>
-          </div>
-        </section>
-
         <section className="space-y-6">
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -203,6 +170,10 @@ export default async function MemberPage() {
             ))}
           </div>
         </section>
+
+        <PublicChat />
+
+        <MemberChat />
 
         <section className="space-y-6">
           <div>

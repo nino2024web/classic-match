@@ -235,7 +235,7 @@ export default function ProfileSetupPage() {
                   value={callSign}
                   onChange={(event) => setCallSign(event.target.value)}
                   placeholder="例: 夜のアリア"
-                  className="mt-2 w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-base text-white outline-none transition focus:border-emerald-300/70 focus:bg-slate-900/70 focus:ring-2 focus:ring-emerald-300/30"
+                  className="mt-2 w-full resize-none rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-base text-white outline-none transition focus:border-emerald-300/70 focus:bg-slate-900/70 focus:ring-2 focus:ring-emerald-300/30"
                   maxLength={40}
                   required
                 />
@@ -248,7 +248,7 @@ export default function ProfileSetupPage() {
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="あなたのメールアドレス"
-                  className="mt-2 w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-base text-white outline-none transition focus:border-emerald-300/70 focus:bg-slate-900/70 focus:ring-2 focus:ring-emerald-300/30"
+                  className="mt-2 w-full resize-none rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-base text-white outline-none transition focus:border-emerald-300/70 focus:bg-slate-900/70 focus:ring-2 focus:ring-emerald-300/30"
                   required
                 />
               </label>
@@ -325,7 +325,7 @@ export default function ProfileSetupPage() {
                   rows={4}
                   maxLength={300}
                   placeholder="例: 弦楽四重奏の透明な響きに弱いです。夜更けに小さな曲を集めています。"
-                  className="mt-2 w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-base text-white outline-none transition focus:border-emerald-300/70 focus:bg-slate-900/70 focus:ring-2 focus:ring-emerald-300/30"
+                  className="mt-2 w-full resize-none rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-base text-white outline-none transition focus:border-emerald-300/70 focus:bg-slate-900/70 focus:ring-2 focus:ring-emerald-300/30"
                 />
               </label>
             </div>
