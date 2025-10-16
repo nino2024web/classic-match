@@ -180,9 +180,9 @@ export default function MemberChat() {
           <textarea
             value={input}
             onChange={(event) => setInput(event.target.value)}
-            rows={3}
+            rows={1}
             placeholder="気分や聴きたいシチュエーションを書き留めてください。"
-            className="mt-2 w-full resize-none rounded-3xl border border-white/10 bg-white/8 px-4 py-3 text-sm text-white outline-none transition focus:border-emerald-300/70 focus:bg-slate-900/70 focus:ring-2 focus:ring-emerald-300/30"
+            className="mt-2 h-[2.75rem] w-full resize-none overflow-y-hidden rounded-3xl border border-white/10 bg-white/8 px-4 py-2 text-sm text-white outline-none transition focus:border-emerald-300/70 focus:bg-slate-900/70 focus:ring-2 focus:ring-emerald-300/30"
           />
         </label>
         <div className="flex justify-end">

@@ -23,8 +23,49 @@ export default function PublicChat() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [ownMessageIds, setOwnMessageIds] = useState<string[]>([]);
+  const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
+  const [reportingMessageId, setReportingMessageId] = useState<string | null>(
+    null
+  );
+  const [reportText, setReportText] = useState("");
+  const [feedback, setFeedback] = useState<{ id: string; type: "report" } | null>(null);
+
+  useEffect(() => {
+    if (!feedback) {
+      return;
+    }
+    const timer = window.setTimeout(() => setFeedback(null), 4000);
+    return () => window.clearTimeout(timer);
+  }, [feedback]);
 
   const latestTimestampRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("public-chat-own-message-ids");
+      if (stored) {
+        const parsed = JSON.parse(stored) as string[];
+        if (Array.isArray(parsed)) {
+          setOwnMessageIds(parsed.filter((id) => typeof id === "string"));
+        }
+      }
+    } catch (error) {
+      console.warn("Failed to restore own message ids", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        "public-chat-own-message-ids",
+        JSON.stringify(ownMessageIds)
+      );
+    } catch (error) {
+      console.warn("Failed to persist own message ids", error);
+    }
+  }, [ownMessageIds]);
+
 
   const fetchMessages = useCallback(async () => {
     try {
@@ -91,10 +132,11 @@ export default function PublicChat() {
         body: JSON.stringify({ content: trimmed }),
       });
 
-      if (!response.ok) {
-        const data = (await response.json().catch(() => null)) as {
-          message?: string;
-        } | null;
+      const data = (await response.json().catch(() => null)) as
+        | { status?: string; id?: string; message?: string }
+        | null;
+
+      if (!response.ok || !data || data.status !== "ok") {
         const message =
           data?.message ??
           "メッセージの送信に失敗しました。時間をおいて再度お試しください。";
@@ -102,7 +144,17 @@ export default function PublicChat() {
         return;
       }
 
+      if (typeof data.id === "string" && data.id.length > 0) {
+        setOwnMessageIds((previous) => {
+          if (previous.includes(data.id!)) {
+            return previous;
+          }
+          return [...previous, data.id!];
+        });
+      }
+
       setInput("");
+      setError(null);
       await fetchMessages();
     } catch (err) {
       console.error("Failed to submit public chat message", err);
@@ -118,9 +170,18 @@ export default function PublicChat() {
   const trimmedInput = input.trim();
   const isOverLimit = charCount > PUBLIC_CHAT_MAX_LENGTH;
   const canSubmit = trimmedInput.length > 0 && !isOverLimit;
+
+  const handleReportSubmit = (id: string) => {
+    setFeedback({ id, type: "report" });
+    setReportingMessageId(null);
+    setReportText("");
+  };
+
+
   const sortedMessages = useMemo(() => {
-    return [...messages].sort((a, b) =>
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    return [...messages].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   }, [messages]);
 
@@ -142,31 +203,32 @@ export default function PublicChat() {
       >
         <label className="flex-1 space-y-1">
           <div className="relative">
-          <textarea
-            value={input}
-            onChange={(event) => setInput(event.target.value)}
-            className={`h-full w-full resize-none rounded-2xl border px-4 py-2 pr-14 text-sm outline-none transition focus:border-emerald-300/70 focus:bg-slate-900/70 focus:ring-2 focus:ring-emerald-300/30 ${
-              isOverLimit
-                ? "border-rose-400/70 bg-rose-400/10 text-rose-100"
-                : "border-white/15 bg-white/10 text-white"
-            }`}
-            onKeyDown={(event) => {
-              if (
-                event.key === "Enter" &&
-                (event.nativeEvent as KeyboardEvent).isComposing
-              ) {
-                return;
-              }
-              if (!event.shiftKey && event.key === "Enter") {
-                event.preventDefault();
-                (
-                  event.currentTarget.form as HTMLFormElement | null
-                )?.dispatchEvent(
-                  new Event("submit", { cancelable: true, bubbles: true })
-                );
-              }
-            }}
-          />
+            <textarea
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              rows={1}
+              className={`h-11 w-full resize-none overflow-y-hidden rounded-2xl border px-3 py-2 pr-16 text-sm outline-none transition focus:border-emerald-300/70 focus:bg-slate-900/70 focus:ring-2 focus:ring-emerald-300/30 ${
+                isOverLimit
+                  ? "border-rose-400/70 bg-rose-400/10 text-rose-100"
+                  : "border-white/15 bg-white/10 text-white"
+              }`}
+              onKeyDown={(event) => {
+                if (
+                  event.key === "Enter" &&
+                  (event.nativeEvent as KeyboardEvent).isComposing
+                ) {
+                  return;
+                }
+                if (!event.shiftKey && event.key === "Enter") {
+                  event.preventDefault();
+                  (
+                    event.currentTarget.form as HTMLFormElement | null
+                  )?.dispatchEvent(
+                    new Event("submit", { cancelable: true, bubbles: true })
+                  );
+                }
+              }}
+            />
             <span
               className={`pointer-events-none absolute bottom-2 right-3 text-base ${
                 isOverLimit
@@ -208,18 +270,93 @@ export default function PublicChat() {
                   minute: "2-digit",
                 }
               );
+              const isOwnMessage = ownMessageIds.includes(message.id);
+              const showPopover = reportingMessageId === message.id && !isOwnMessage;
+              const showFeedback = feedback?.id === message.id && !isOwnMessage;
+              const crossVisible = !isOwnMessage
+                ? showPopover || hoveredMessageId === message.id
+                  ? "opacity-100"
+                  : "opacity-0 sm:group-hover:opacity-100"
+                : "opacity-0 pointer-events-none";
+
               return (
-                <article
+                <div
                   key={message.id}
-                  className="mb-3 flex items-start gap-3 last:mb-0"
+                  className="group relative mb-3 flex flex-col gap-2 rounded-2xl bg-transparent last:mb-0"
+                  onMouseEnter={() => setHoveredMessageId(message.id)}
+                  onMouseLeave={() => setHoveredMessageId(null)}
                 >
-                  <time className="w-24 flex-shrink-0 text-xs uppercase tracking-[0.25em] text-slate-400">
-                    {postedAt}
-                  </time>
-                  <p className="whitespace-pre-wrap text-sm text-slate-100">
-                    {message.content}
-                  </p>
-                </article>
+                  <div className="flex items-start gap-3">
+                    <time className="w-24 flex-shrink-0 text-xs uppercase tracking-[0.25em] text-slate-400">
+                      {postedAt}
+                    </time>
+                    <p className="flex-1 whitespace-pre-wrap text-sm text-slate-100">
+                      {message.content}
+                    </p>
+                  </div>
+
+                  {showFeedback && (
+                    <p className="ml-24 text-xs text-emerald-300">
+                      静かな運営チームへ通知しました。ご協力ありがとうございます。
+                    </p>
+                  )}
+
+                  {!isOwnMessage && (
+                    <button
+                      type="button"
+                      aria-label="通報する"
+                      onClick={() => {
+                        if (reportingMessageId === message.id) {
+                          setReportingMessageId(null);
+                          setReportText("");
+                          setFeedback(null);
+                          return;
+                        }
+                        setReportingMessageId(message.id);
+                        setReportText("");
+                        setFeedback(null);
+                      }}
+                      className={`absolute right-0 top-2 rounded-full border border-white/20 bg-slate-900/80 px-2 text-xs text-white transition duration-150 focus:opacity-100 hover:opacity-100 ${crossVisible}`}
+                    >
+                      ✖️
+                    </button>
+                  )}
+
+                  {showPopover && (
+                    <div className="absolute right-0 top-10 z-10 w-72 space-y-3 rounded-2xl border border-white/20 bg-slate-950/95 p-4 text-xs text-slate-200 shadow-xl">
+                      <div>
+                        <p className="font-medium text-white">通報内容（任意・匿名）</p>
+                        <textarea
+                          value={reportText}
+                          onChange={(event) => setReportText(event.target.value)}
+                          rows={3}
+                          maxLength={200}
+                          className="mt-2 w-full resize-none rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-xs text-white outline-none transition focus:border-emerald-300/70 focus:bg-slate-900/80"
+                          placeholder="例: 個人を攻撃する表現が含まれています。"
+                        />
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleReportSubmit(message.id)}
+                          className="flex-1 rounded-full border border-emerald-300/50 px-3 py-2 text-xs font-semibold text-emerald-200 transition hover:border-emerald-300 hover:bg-emerald-300/10"
+                        >
+                          通報を送る
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setReportingMessageId(null);
+                            setReportText("");
+                          }}
+                          className="flex-1 rounded-full border border-white/15 px-3 py-2 text-xs text-slate-200 transition hover:border-white/35 hover:bg-white/10"
+                        >
+                          閉じる
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               );
             })}
       </div>

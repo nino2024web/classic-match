@@ -38,6 +38,7 @@ export default function LoginView() {
   useEffect(() => {
     router.prefetch("/member");
     router.prefetch("/signup");
+    router.prefetch("/admin");
   }, [router]);
 
   useEffect(() => {
@@ -101,17 +102,41 @@ export default function LoginView() {
         callSign?: string;
       } | null;
 
-      if (!response.ok) {
-        const errorMessage =
-          data?.message ??
-          "ログインに失敗しました。時間をおいて再度お試しください。";
-        setMessage(errorMessage);
+      if (response.ok) {
         setLoading(false);
+        router.push("/member");
         return;
       }
 
+      const fallbackMessage =
+        data?.message ??
+        "ログインに失敗しました。時間をおいて再度お試しください。";
+
+      const adminResponse = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+        }),
+      });
+
+      const adminData = (await adminResponse.json().catch(() => null)) as
+        | { status?: string; message?: string }
+        | null;
+
+      if (adminResponse.ok && adminData?.status === "ok") {
+        setLoading(false);
+        router.push("/admin");
+        return;
+      }
+
+      const adminMessage =
+        adminData?.message ?? fallbackMessage;
+      setMessage(adminMessage);
       setLoading(false);
-      router.push("/member");
     } catch (error) {
       console.error("Failed to login", error);
       setMessage(

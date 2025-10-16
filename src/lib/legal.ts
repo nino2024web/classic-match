@@ -88,7 +88,7 @@ export const TERMS_SECTIONS: LegalSection[] = [
 
 export const TERMS_CONTACT: string[] = [
   "【制定日】2025年10月9日",
-  "【お問い合わせ】support@classic-match.example",
+  "【お問い合わせ】classicalservice2025@gmail.com",
 ];
 
 export const PRIVACY_SECTIONS: LegalSection[] = [

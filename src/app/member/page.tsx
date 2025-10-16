@@ -102,9 +102,6 @@ export default async function MemberPage() {
       <main className="relative mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-12 px-6 py-16 sm:px-10 lg:px-16">
         <header className="flex flex-col gap-6 rounded-[36px] border border-white/10 bg-slate-950/70 p-8 shadow-[0_60px_120px_-55px_rgba(9,9,11,0.9)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between sm:p-10">
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-emerald-200/80">
-              Member Lounge
-            </p>
             <h1 className="text-3xl font-semibold text-white sm:text-4xl">
               静寂のラウンジへようこそ、{callSign} さん。
             </h1>
@@ -264,10 +261,10 @@ export default async function MemberPage() {
         <footer className="mb-10 text-sm text-slate-500">
           ご質問やフィードバックは{" "}
           <a
-            href="mailto:support@classic-match.example"
+            href="mailto:classicalservice2025@gmail.com"
             className="text-emerald-300 transition hover:text-emerald-200"
           >
-            support@classic-match.example
+            classicalservice2025@gmail.com
           </a>{" "}
           までお気軽にお寄せください。
         </footer>
