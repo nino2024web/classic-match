@@ -24,6 +24,12 @@ async function ensureTable() {
 export async function GET() {
   try {
     await ensureTable();
+    await query(
+      `
+        DELETE FROM public_chat_messages
+        WHERE created_at < NOW() - INTERVAL '24 hours'
+      `
+    );
     const result = await query<DbRow>(
       `
         SELECT id, content, created_at
@@ -36,12 +42,11 @@ export async function GET() {
     return NextResponse.json(
       {
         status: "ok",
-        messages: result.rows
-          .map((row) => ({
-            id: row.id,
-            content: row.content,
-            createdAt: row.created_at,
-          })),
+        messages: result.rows.map((row: DbRow) => ({
+          id: row.id,
+          content: row.content,
+          createdAt: row.created_at,
+        })),
       },
       { status: 200 }
     );
@@ -89,6 +94,17 @@ export async function POST(request: Request) {
         VALUES ($1, $2)
       `,
       [id, content]
+    );
+    await query(
+      `
+        DELETE FROM public_chat_messages
+        WHERE id IN (
+          SELECT id
+          FROM public_chat_messages
+          ORDER BY created_at DESC
+          OFFSET 100
+        )
+      `
     );
 
     return NextResponse.json(

@@ -247,9 +247,24 @@ export default async function MemberPage() {
                       {section.title}
                     </h3>
                     <div className="space-y-2 text-sm leading-relaxed text-slate-200">
-                      {section.body.map((paragraph, index) => (
-                        <p key={index}>{paragraph}</p>
-                      ))}
+                      {section.title.includes("お問い合わせ") ? (
+                        <>
+                          <p>{section.body[0]}</p>
+                          <p>
+                            <Link
+                              href="/member/contact"
+                              className="font-medium text-emerald-300 transition hover:text-emerald-200"
+                            >
+                              お問い合わせ先はこちら
+                            </Link>
+                          </p>
+                          <p>{section.body[2]}</p>
+                        </>
+                      ) : (
+                        section.body.map((paragraph, index) => (
+                          <p key={index}>{paragraph}</p>
+                        ))
+                      )}
                     </div>
                   </section>
                 ))}
@@ -260,12 +275,12 @@ export default async function MemberPage() {
 
         <footer className="mb-10 text-sm text-slate-500">
           ご質問やフィードバックは{" "}
-          <a
-            href="mailto:classicalservice2025@gmail.com"
+          <Link
+            href="/member/contact"
             className="text-emerald-300 transition hover:text-emerald-200"
           >
-            classicalservice2025@gmail.com
-          </a>{" "}
+            会員専用お問い合わせ先
+          </Link>{" "}
           までお気軽にお寄せください。
         </footer>
       </main>

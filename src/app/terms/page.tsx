@@ -15,9 +15,7 @@ export default async function TermsPage() {
 
   if (validation.status === "valid") {
     redirect("/member");
-  }
-
-  if (validation.status !== "valid") {
+  } else {
     redirect("/signup?next=/terms");
   }
 

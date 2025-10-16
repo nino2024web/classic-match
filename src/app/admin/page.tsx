@@ -5,6 +5,7 @@ import {
   ADMIN_SESSION_COOKIE_NAME,
   validateAdminSessionCookie,
 } from "@/lib/adminSession";
+import AdminLogoutButton from "@/components/admin/AdminLogoutButton";
 
 export default async function AdminDashboardPage() {
   const cookieStore = await cookies();
@@ -21,6 +22,9 @@ export default async function AdminDashboardPage() {
         <p className="text-sm text-slate-300">
           ここに管理者向けの機能を配置してください。現在はプレースホルダーです。
         </p>
+        <div className="pt-4">
+          <AdminLogoutButton />
+        </div>
       </div>
     </main>
   );

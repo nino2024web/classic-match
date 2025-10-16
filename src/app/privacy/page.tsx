@@ -12,9 +12,7 @@ export default async function PrivacyPage() {
 
   if (validation.status === "valid") {
     redirect("/member");
-  }
-
-  if (validation.status !== "valid") {
+  } else {
     redirect("/signup?next=/privacy");
   }
 
@@ -48,7 +46,17 @@ export default async function PrivacyPage() {
           ))}
         </article>
 
-        <footer className="text-center text-sm text-slate-400">
+        <footer className="space-y-3 text-center text-sm text-slate-400">
+          <p>
+            お問い合わせは{" "}
+            <Link
+              href="/member/contact"
+              className="text-emerald-300 transition hover:text-emerald-200"
+            >
+              会員専用のお問い合わせ窓口
+            </Link>
+            からご連絡ください。
+          </p>
           <Link
             href="/"
             className="text-emerald-300 transition hover:text-emerald-200"
