@@ -34,7 +34,17 @@ function systemResponse(era: EraKey, composer: string | undefined, prompt: strin
   return `【${composer}】${eraSnippet}\n` + `「${prompt}」に合いそうな作品を次回リリース時にご案内できるようメモしました。`;
 }
 
+const ENABLE_DISCOVERY_CHAT = false;
+
 export default function MemberChat() {
+  if (!ENABLE_DISCOVERY_CHAT) {
+    return null;
+  }
+
+  return <DiscoveryChat />;
+}
+
+function DiscoveryChat() {
   const [selectedEra, setSelectedEra] = useState<EraKey>("ロマン派");
   const [activeComposer, setActiveComposer] = useState<string | null>(null);
   const [input, setInput] = useState("");

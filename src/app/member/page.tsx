@@ -100,8 +100,8 @@ export default async function MemberPage() {
       </div>
 
       <main className="relative mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-12 px-6 py-16 sm:px-10 lg:px-16">
-        <header className="flex flex-col gap-6 rounded-[36px] border border-white/10 bg-slate-950/70 p-8 shadow-[0_60px_120px_-55px_rgba(9,9,11,0.9)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between sm:p-10">
-          <div className="space-y-3">
+        <header className="relative flex flex-col gap-6 rounded-[36px] border border-white/10 bg-slate-950/70 p-8 shadow-[0_60px_120px_-55px_rgba(9,9,11,0.9)] backdrop-blur-xl sm:p-10">
+          <div className="space-y-3 sm:pr-44">
             <h1 className="text-3xl font-semibold text-white sm:text-4xl">
               静寂のラウンジへようこそ、{callSign} さん。
             </h1>
@@ -110,67 +110,23 @@ export default async function MemberPage() {
               穏やかな場づくりにご協力いただきつつ、少しずつ広がるコンテンツをお楽しみください。
             </p>
           </div>
-          <div className="flex gap-3">
+
+          
+          <div className="flex gap-2 sm:absolute sm:right-8 sm:top-8 sm:flex-col sm:items-end sm:gap-2">
             <Link
               href="/profile/setup"
-              className="inline-flex items-center justify-center rounded-full border border-emerald-300/50 px-6 py-3 text-sm font-semibold text-emerald-100 transition hover:border-emerald-300 hover:bg-emerald-300/10"
+              className="inline-flex items-center justify-center rounded-full border border-emerald-300/50 px-4 py-2 text-xs font-semibold text-emerald-100 transition hover:border-emerald-300 hover:bg-emerald-300/10 sm:px-5 sm:py-2 sm:text-sm"
             >
               プロフィールを編集
             </Link>
             <Link
               href="/logout"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-6 py-3 text-sm font-semibold text-slate-100 transition hover:border-white/40 hover:bg-white/10"
+              className="inline-flex items-center justify-center rounded-full border border-white/20 px-4 py-2 text-xs font-semibold text-slate-100 transition hover:border-white/40 hover:bg-white/10 sm:px-5 sm:py-2 sm:text-sm"
             >
               ログアウト
             </Link>
           </div>
         </header>
-
-        <section className="space-y-6">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-semibold text-white sm:text-xl">
-                クイックアクション
-              </h2>
-              <p className="text-sm text-slate-400">
-                現在ご利用いただける項目と、まもなく開放予定の機能です。
-              </p>
-            </div>
-          </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            {quickActions.map((action) => (
-              <div
-                key={action.title}
-                className="flex h-full flex-col gap-3 rounded-3xl border border-white/10 bg-slate-950/70 p-5 text-sm text-slate-200"
-              >
-                <div>
-                  <h3 className="text-base font-semibold text-white">
-                    {action.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-slate-400">
-                    {action.description}
-                  </p>
-                </div>
-                {action.href ? (
-                  <Link
-                    href={action.href}
-                    className="mt-auto inline-flex items-center justify-center rounded-full border border-emerald-300/50 px-4 py-2 text-xs font-semibold text-emerald-100 transition hover:border-emerald-300 hover:bg-emerald-300/10"
-                  >
-                    開く
-                  </Link>
-                ) : (
-                  <span className="mt-auto inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-xs font-semibold text-slate-400">
-                    近日公開
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <PublicChat />
-
-        <MemberChat />
 
         <section className="space-y-6">
           <div>
@@ -200,6 +156,56 @@ export default async function MemberPage() {
             ))}
           </div>
         </section>
+
+        {false && (
+          <section className="space-y-6">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-white sm:text-xl">
+                  クイックアクション
+                </h2>
+                <p className="text-sm text-slate-400">
+                  現在ご利用いただける項目と、まもなく開放予定の機能です。
+                </p>
+              </div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              {quickActions.map((action) => (
+                <div
+                  key={action.title}
+                  className="flex h-full flex-col gap-3 rounded-3xl border border-white/10 bg-slate-950/70 p-5 text-sm text-slate-200"
+                >
+                  <div>
+                    <h3 className="text-base font-semibold text-white">
+                      {action.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-slate-400">
+                      {action.description}
+                    </p>
+                  </div>
+                  {action.href ? (
+                    <Link
+                      href={action.href}
+                      className="mt-auto inline-flex items-center justify-center rounded-full border border-emerald-300/50 px-4 py-2 text-xs font-semibold text-emerald-100 transition hover:border-emerald-300 hover:bg-emerald-300/10"
+                    >
+                      開く
+                    </Link>
+                  ) : (
+                    <span className="mt-auto inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-xs font-semibold text-slate-400">
+                      近日公開
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <PublicChat />
+
+        <MemberChat />
+
+       
 
         <section className="space-y-6">
           <div>

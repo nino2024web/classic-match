@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import {
+  FormEvent,
+  Suspense,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 const ERA_OPTIONS = ["バロック", "古典派", "ロマン派", "近代", "現代"];
 
@@ -22,6 +28,20 @@ const MOOD_OPTIONS = [
 const MAX_MOOD_SELECTION = 3;
 
 export default function ProfileSetupPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-slate-950 text-slate-200">
+          プロフィールを読み込んでいます…
+        </div>
+      }
+    >
+      <ProfileSetupContent />
+    </Suspense>
+  );
+}
+
+function ProfileSetupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialCallSign = searchParams.get("callSign") ?? "";

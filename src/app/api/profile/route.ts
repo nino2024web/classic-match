@@ -30,7 +30,7 @@ type ProfileRecord = {
 };
 
 export async function GET() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const rawSession = cookieStore.get(SESSION_COOKIE_NAME)?.value;
   const validation = validateSessionCookie(rawSession);
 

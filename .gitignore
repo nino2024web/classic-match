@@ -43,3 +43,11 @@ yarn-error.log*
 next-env.d.ts
 
 .docx
+
+node_modules
+.next/cache
+.git
+.env*
+.vercel
+*.tsbuildinfo
+
