@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+import { Pool, type QueryResult, type QueryResultRow } from "pg";
 
 declare global {
   var __classicMatchPool: Pool | undefined;
@@ -11,7 +11,6 @@ function createPool() {
       "DATABASE_URL が設定されていません。PostgreSQL への接続文字列を .env.local などで指定してください。"
     );
   }
-
   return new Pool({
     connectionString,
     max: 5,
@@ -19,14 +18,16 @@ function createPool() {
   });
 }
 
-export function getPool() {
+export function getPool(): Pool {
   if (!globalThis.__classicMatchPool) {
     globalThis.__classicMatchPool = createPool();
   }
   return globalThis.__classicMatchPool;
 }
 
-export async function query<T = unknown>(text: string, params: unknown[] = []) {
-  const pool = getPool();
-  return pool.query<T>(text, params);
+export async function query<T extends QueryResultRow = QueryResultRow>(
+  text: string,
+  params: unknown[] = []  
+): Promise<QueryResult<T>> {
+  return getPool().query<T>(text, params);
 }

@@ -1,5 +1,7 @@
 declare module "pg" {
-  export type QueryResult<T = unknown> = {
+  export type QueryResultRow = Record<string, unknown>;
+
+  export type QueryResult<T = QueryResultRow> = {
     rows: T[];
     rowCount: number;
   };

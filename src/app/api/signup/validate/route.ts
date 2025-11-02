@@ -54,7 +54,7 @@ export async function POST(request: Request) {
       "SELECT 1 FROM beta_signups WHERE email = $1 LIMIT 1",
       [normalizedEmail]
     );
-    if (emailResult.rowCount > 0) {
+    if (emailResult.rows.length > 0) {
       return NextResponse.json(
         { message: "このメールアドレスは登録済みです。" },
         { status: 409 }
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
       "SELECT 1 FROM beta_signups WHERE lower(call_sign) = $1 LIMIT 1",
       [normalizedCallSign]
     );
-    if (nameResult.rowCount > 0) {
+    if (nameResult.rows.length > 0) {
       return NextResponse.json(
         { message: "この呼び名はすでに使用されています。" },
         { status: 409 }
